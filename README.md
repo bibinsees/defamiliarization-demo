@@ -2,7 +2,7 @@
 
 A ChatGPT-style web demo for the paper **"Defamiliarization Attack: Literary Theory Enabled Discussion of LLM Safety"**.
 
-📄 **Paper:** _link coming soon_ <!-- TODO: replace with the paper URL (MDPI / arXiv / DOI) -->
+📄 **Paper:** [Electronics (MDPI), 15(5), 1047](https://www.mdpi.com/2079-9292/15/5/1047)
 💻 **Full research code and datasets:** [bibinsees/Adversarial-attack](https://github.com/bibinsees/Adversarial-attack)
 
 ## What the demo shows
