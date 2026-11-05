@@ -1,0 +1,4 @@
+# Default look for demo_app.py: white background, black text.
+# Dark mode is switched on/off from the sidebar toggle inside the app.
+[theme]
+base = "light"
