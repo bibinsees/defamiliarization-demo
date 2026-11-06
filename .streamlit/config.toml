@@ -1,4 +1,7 @@
-# Default look for demo_app.py: white background, black text.
+# Default look for demo_app.py: light theme from style-kit/ (emotions palette).
 # Dark mode is switched on/off from the sidebar toggle inside the app.
+# Surfaces/text for the light theme are set by LIGHT_CSS in demo_app.py so
+# they don't leak into dark mode; only the accent color lives here.
 [theme]
 base = "light"
+primaryColor = "#2C84DB"   # style-kit blue: toggles, radios, slider fill, primary button

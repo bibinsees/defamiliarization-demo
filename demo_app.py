@@ -165,11 +165,14 @@ _UNSAFE_WORDS = [
     r"where .{0,30}?hide .{0,20}?money",
 ]
 _UNSAFE_RE = re.compile("(" + "|".join(_UNSAFE_WORDS) + ")", re.I)
-_RED_OPEN = '<span class="unsafe-hl" style="color:#e03131;font-weight:700">'
+_RED_OPEN = '<span class="unsafe-hl" style="color:#C46686;font-weight:700">'
 
 
 def highlight_unsafe(text: str) -> str:
-    """Wrap burglary-signal phrases in a red span (leaves markdown intact)."""
+    """Wrap burglary-signal phrases in a highlight span (leaves markdown intact).
+
+    Light theme: pink on pink tint (style-kit "negative"); dark theme: red.
+    """
     return _UNSAFE_RE.sub(lambda m: f"{_RED_OPEN}{m.group(0)}</span>", text)
 
 
@@ -246,6 +249,134 @@ hr {border-color: #3a3d4a !important;}
 </style>
 """
 
+# Light theme, built from style-kit/ (emotions-theme.css + STYLE_GUIDE.md).
+# Only the kit's palette is used:
+#   page #FBFBFA · panel/cream #FAF9F5 · card #FFFFFF · border #DDDDDD
+#   title #000000 · text #3D3D3A · muted #73726C
+#   blue #2C84DB (good / SAFE) · pink #C46686 (bad / UNSAFE)
+#   blue tint #EAF3F7 · pink tint #FCEBEA
+LIGHT_CSS = """
+<style>
+:root {
+  --et-page: #FBFBFA; --et-panel: #FAF9F5; --et-card: #FFFFFF; --et-border: #DDDDDD;
+  --et-title: #000000; --et-text: #3D3D3A; --et-muted: #73726C;
+  --et-blue: #2C84DB; --et-pink: #C46686; --et-blue-band: #EAF3F7; --et-pink-band: #FCEBEA;
+  --et-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+             "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+  --et-mono: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+}
+
+/* ---- surfaces ---- */
+.stApp, [data-testid="stAppViewContainer"], [data-testid="stBottomBlockContainer"] {
+  background-color: var(--et-page) !important;
+}
+[data-testid="stSidebar"], [data-testid="stSidebarContent"] {
+  background-color: var(--et-panel) !important;
+}
+[data-testid="stSidebar"] {border-right: 1px solid var(--et-border);}
+
+/* ---- typography ---- */
+.stApp, .stApp p, .stApp li, .stApp label, .stApp button, .stApp input {
+  font-family: var(--et-sans);
+  -webkit-font-smoothing: antialiased;
+}
+.stApp, .stApp p, .stApp li, .stApp strong, .stApp em,
+[data-testid="stMarkdownContainer"], [data-testid="stWidgetLabel"] {color: var(--et-text);}
+.stApp h1, .stApp h2, .stApp h3, .stApp h4 {
+  color: var(--et-title) !important; font-family: var(--et-sans); font-weight: 700;
+}
+[data-testid="stMain"] h1 {               /* page title */
+  font-size: 50px; line-height: 1.1; letter-spacing: -0.5px; text-align: center;
+  padding: 24px 0 28px;
+}
+[data-testid="stSidebar"] h1 {font-size: 24px; letter-spacing: -0.3px;}
+[data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {font-size: 19px;}
+[data-testid="stCaptionContainer"], [data-testid="stCaptionContainer"] p,
+[data-testid="stWidgetLabel"] p {color: var(--et-muted) !important;}
+.stApp code {font-family: var(--et-mono); background: var(--et-panel); color: var(--et-muted);}
+hr {border-color: var(--et-border) !important; background-color: var(--et-border) !important;}
+
+/* ---- chat bubbles: target = white card, attacker = cream panel ---- */
+[data-testid="stChatMessage"] {
+  background: var(--et-card) !important;
+  border: 1px solid var(--et-border);
+  border-radius: 10px;
+  color: var(--et-text);
+}
+[data-testid="stChatMessage"]:has([aria-label="Chat message from user"]) {
+  background: var(--et-panel) !important;
+}
+
+/* ---- unsafe-phrase highlight: pink accent on pink tint ---- */
+.stApp span.unsafe-hl, .stApp span.unsafe-hl * {
+  color: var(--et-pink) !important; font-weight: 700;
+}
+.stApp span.unsafe-hl {background: var(--et-pink-band); padding: 0 2px; border-radius: 3px;}
+
+/* ---- verdict / notice boxes ---- */
+[data-testid="stAlertContainer"] {border-radius: 8px; border: 1px solid transparent;}
+[data-testid="stAlertContainer"]:has([data-testid="stAlertContentError"]) {
+  background: var(--et-pink-band) !important;
+}
+[data-testid="stAlertContainer"]:has([data-testid="stAlertContentError"]) * {color: var(--et-pink) !important;}
+[data-testid="stAlertContainer"]:has([data-testid="stAlertContentSuccess"]) {
+  background: var(--et-blue-band) !important;
+}
+[data-testid="stAlertContainer"]:has([data-testid="stAlertContentSuccess"]) * {color: var(--et-blue) !important;}
+[data-testid="stAlertContainer"]:has([data-testid="stAlertContentWarning"]),
+[data-testid="stAlertContainer"]:has([data-testid="stAlertContentInfo"]) {
+  background: var(--et-panel) !important; border-color: var(--et-border);
+}
+[data-testid="stAlertContainer"]:has([data-testid="stAlertContentWarning"]) *,
+[data-testid="stAlertContainer"]:has([data-testid="stAlertContentInfo"]) * {color: var(--et-text) !important;}
+
+/* ---- expanders (judge reasoning, hidden replies, live status) ---- */
+[data-testid="stExpander"] details {
+  background: var(--et-card); border: 1px solid var(--et-border) !important; border-radius: 10px;
+}
+[data-testid="stExpander"] summary, [data-testid="stExpander"] summary * {color: var(--et-text);}
+[data-testid="stExpander"] summary:hover {background: var(--et-panel);}
+
+/* ---- buttons ---- */
+.stButton button {
+  font-family: var(--et-sans); font-weight: 700; border-radius: 5px;
+  transition: background .2s, color .2s, opacity .2s;
+}
+.stButton button p {font-weight: 700;}
+.stButton button[kind="secondary"] {
+  background: var(--et-card) !important; border: 1px solid var(--et-border) !important;
+  color: var(--et-text) !important;
+}
+.stButton button[kind="secondary"]:hover {background: var(--et-panel) !important;}
+.stButton button[kind="primary"] {
+  background: var(--et-blue) !important; border: 1px solid var(--et-blue) !important;
+  color: #FFFFFF !important;
+}
+.stButton button[kind="primary"] p {color: #FFFFFF !important;}
+.stButton button[kind="primary"]:hover {opacity: .9;}
+
+/* ---- inputs ---- */
+[data-baseweb="select"] > div, [data-baseweb="input"] > div, [data-baseweb="input"] input,
+.stNumberInput button {
+  background-color: var(--et-card) !important; border-color: var(--et-border) !important;
+  color: var(--et-text) !important;
+}
+[data-baseweb="popover"] ul, [data-baseweb="popover"] li {
+  background-color: var(--et-card) !important; color: var(--et-text) !important;
+}
+
+/* ---- sliders: white thumb, dark ring, mono readout ---- */
+[data-testid="stSlider"] [role="slider"] {
+  width: 20px; height: 20px; background: var(--et-card) !important;
+  border: 2.5px solid var(--et-text); box-shadow: none !important;
+}
+[data-testid="stSliderThumbValue"] {
+  font-family: var(--et-mono); font-weight: 700; color: var(--et-text) !important;
+}
+[data-testid="stSliderTickBar"] {color: var(--et-muted);}
+</style>
+"""
+
 # =============================================================================
 # Page
 # =============================================================================
@@ -262,10 +393,11 @@ st.markdown(
     header[data-testid="stHeader"] {background: transparent;}
     [data-testid="stExpandSidebarButton"] {visibility: visible !important;}
     .block-container {max-width: 900px; padding-top: 1.5rem;}
-    .stApp span.unsafe-hl {color: #e03131 !important; font-weight: 700;}
-    /* attacker ("user") bubbles on the right, like ChatGPT */
+    /* attacker ("user") bubbles on the right, like ChatGPT.
+       Emoji avatars carry no avatar test-id, so also match the aria-label. */
     [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]),
-    [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
+    [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]),
+    [data-testid="stChatMessage"]:has([aria-label="Chat message from user"]) {
         flex-direction: row-reverse;
         background: rgba(120, 120, 255, 0.08);
         border-radius: 14px;
@@ -290,8 +422,7 @@ with st.sidebar:
     st.title("🎭 AutoDefa")
     st.caption("Automated defamiliarization attack · live demo controls")
     st.toggle("🌙 Dark mode", key="dark_mode")
-    if ss.dark_mode:
-        st.markdown(DARK_CSS, unsafe_allow_html=True)
+    st.markdown(DARK_CSS if ss.dark_mode else LIGHT_CSS, unsafe_allow_html=True)
 
     mode = st.radio("Mode", ["Replay (pre-recorded)", "Live (calls OpenAI)"])
     is_live = mode.startswith("Live")
